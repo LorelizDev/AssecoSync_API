@@ -1,4 +1,4 @@
-import { config } from "dotenv";
+import { config } from 'dotenv';
 
 config();
 
@@ -11,7 +11,17 @@ const NODE_ENV: string | undefined = process.env.NODE_ENV;
 const PORT: string | undefined = process.env.PORT;
 
 if (!DB_DEV_NAME || !DB_USER || !DB_PASSWORD || !DB_HOST) {
-  throw new Error("⚠️  Missing environment variables to database connection ⚠️");
+  throw new Error(
+    '⚠️  Missing environment variables to database connection ⚠️'
+  );
 }
 
-export { DB_DEV_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_TEST_NAME, NODE_ENV, PORT };
+export {
+  DB_DEV_NAME,
+  DB_USER,
+  DB_PASSWORD,
+  DB_HOST,
+  DB_TEST_NAME,
+  NODE_ENV,
+  PORT,
+};
