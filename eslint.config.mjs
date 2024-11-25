@@ -1,55 +1,33 @@
-import globals from 'globals';
-import pluginReact from 'eslint-plugin-react';
-import prettierPlugin from 'eslint-plugin-prettier';
 import eslintJs from '@eslint/js';
-import * as tseslint from 'typescript-eslint';
+import prettierPlugin from 'eslint-plugin-prettier';
+import * as tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
-  // Configuración global
+  // Configuración global para TypeScript
   {
     languageOptions: {
-      globals: { ...globals.browser, ...globals.node },
-    },
-    plugins: {
-      react: pluginReact,
-      prettier: prettierPlugin,
-    },
-    rules: {
-      'prettier/prettier': 'error',
-      'react/react-in-jsx-scope': 'off',
-    },
-  },
-
-  // Configuración para archivos React y JSX/TSX
-  {
-    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
-    settings: {
-      react: {
-        version: 'detect',
+      parser: tsParser,
+      parserOptions: {
+        project: './tsconfig.json',
+        sourceType: 'module',
+        ecmaVersion: 2020,
+      },
+      globals: {
+        ...globals.node,
       },
     },
     plugins: {
-      react: pluginReact,
-    },
-    rules: {
-      ...pluginReact.configs.recommended.rules,
-      'react/prop-types': 'off',
-    },
-  },
-
-  // Configuración de Prettier
-  {
-    plugins: {
+      '@typescript-eslint': tseslint,
       prettier: prettierPlugin,
     },
     rules: {
       'prettier/prettier': 'error',
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
 
   // Reglas recomendadas de ESLint
   eslintJs.configs.recommended,
-
-  // Reglas recomendadas de TypeScript
-  ...tseslint.configs.recommended,
 ];
