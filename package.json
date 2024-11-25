@@ -4,13 +4,31 @@
   "main": "index.js",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll --no-cache --detectOpenHandles",
-    "dev": "ts-node-dev --respawn ./app.ts"
+    "dev": "ts-node-dev --respawn ./app.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "comentarios": {
+    "lint": "Este script ejecuta ESLint en todo el proyecto para verificar si hay errores.",
+    "lint:fix": " Este script ejecuta ESLint y corrige automáticamente los problemas que puedan solucionarse.",
+    "format": "Este script ejecuta Prettier para formatear todos los archivos en el proyecto."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "globals": "^15.12.0",
+    "prettier": "^3.3.3",
+    "typescript-eslint": "^8.15.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-validator": "^3.0.2",
@@ -34,5 +52,9 @@
     "keycloak-connect": "^26.0.6",
     "pg": "^8.13.1",
     "sequelize": "^6.37.5"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.ts": "eslint --cache --fix"
   }
 }
