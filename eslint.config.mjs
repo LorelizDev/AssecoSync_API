@@ -1,3 +1,4 @@
+import globals from 'globals';
 import eslintJs from '@eslint/js';
 import prettierPlugin from 'eslint-plugin-prettier';
 import * as tseslint from '@typescript-eslint/eslint-plugin';
@@ -30,4 +31,5 @@ export default [
 
   // Reglas recomendadas de ESLint
   eslintJs.configs.recommended,
+  tseslint.configs.recommended,
 ];
