@@ -4,6 +4,7 @@ import db from './database/db';
 import { PORT } from './config';
 import Role from './models/roleModel';
 import Department from './models/departmentModel';
+import Employee from './models/employeeModel';
 
 export const app = express();
 const port = PORT || 8000;
@@ -22,6 +23,7 @@ const startServer = async () => {
 
     await Role.sync();
     await Department.sync();
+    await Employee.sync();
     console.log('✅ Database synced successfully.');
   } catch (error) {
     console.error('❌ Unable to connect to Database', error);
