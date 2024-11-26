@@ -3,6 +3,7 @@ import cors from 'cors';
 import db from './database/db';
 import { PORT } from './config';
 import Role from './models/roleModel';
+import Department from './models/departmentModel';
 
 export const app = express();
 const port = PORT || 8000;
@@ -20,6 +21,7 @@ const startServer = async () => {
     console.log('👍Connection has been established successfully.');
 
     await Role.sync();
+    await Department.sync();
     console.log('✅ Database synced successfully.');
   } catch (error) {
     console.error('❌ Unable to connect to Database', error);
