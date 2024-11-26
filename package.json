@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "comentarios": {
     "lint": "Este script ejecuta ESLint en todo el proyecto para verificar si hay errores.",
