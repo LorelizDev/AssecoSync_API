@@ -13,8 +13,6 @@ app.get('/', (req, res) => {
   res.send('This is the AssecoSync API');
 });
 
-app.use('/api');
-
 const startServer = async () => {
   try {
     await db.authenticate();
