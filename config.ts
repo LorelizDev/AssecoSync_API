@@ -9,10 +9,20 @@ const DB_HOST: string | undefined = process.env.DB_HOST;
 const DB_TEST_NAME: string | undefined = process.env.DB_TEST_NAME;
 const NODE_ENV: string | undefined = process.env.NODE_ENV;
 const PORT: string | undefined = process.env.PORT;
+const SESSION_SECRET: string | undefined = process.env.SESSION_SECRET;
+const CLIENT_SECRET: string | undefined = process.env.CLIENT_SECRET;
+const CLIENT_ID: string | undefined = process.env.CLIENT_ID;
+const TOKEN_URL: string | undefined = process.env.TOKEN_URL;
 
 if (!DB_DEV_NAME || !DB_USER || !DB_PASSWORD || !DB_HOST) {
   throw new Error(
     '⚠️  Missing environment variables to database connection ⚠️'
+  );
+}
+
+if (!SESSION_SECRET || !CLIENT_SECRET || !CLIENT_ID || !TOKEN_URL) {
+  throw new Error(
+    '⚠️  Missing environment variables to keycloak connection ⚠️'
   );
 }
 
@@ -24,4 +34,8 @@ export {
   DB_TEST_NAME,
   NODE_ENV,
   PORT,
+  SESSION_SECRET,
+  CLIENT_SECRET,
+  CLIENT_ID,
+  TOKEN_URL,
 };

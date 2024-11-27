@@ -5,6 +5,7 @@ import { PORT } from './config';
 import Role from './models/roleModel';
 import Department from './models/departmentModel';
 import Employee from './models/employeeModel';
+import authRoutes from './routes/authRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -15,6 +16,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('This is the AssecoSync API');
 });
+
+app.use('/auth', authRoutes);
 
 const startServer = async () => {
   try {
