@@ -3,10 +3,8 @@ import cors from 'cors';
 import session from 'express-session';
 import db from './database/db';
 import { PORT } from './config';
-import Role from './models/roleModel';
-import Department from './models/departmentModel';
-import Employee from './models/employeeModel';
 import authRoutes from './routes/authRoutes';
+import employeeRoutes from './routes/employeeRoutes';
 import { SESSION_SECRET } from './config';
 import { keycloak } from './middlewares/keycloak';
 
@@ -33,16 +31,15 @@ app.get('/', (req, res) => {
   res.send('This is the AssecoSync API');
 });
 
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/employees', employeeRoutes);
 
 const startServer = async () => {
   try {
     await db.authenticate();
     console.log('👍Connection has been established successfully.');
 
-    await Role.sync();
-    await Department.sync();
-    await Employee.sync();
+    await db.sync({ alter: true });
     console.log('✅ Database synced successfully.');
   } catch (error) {
     console.error('❌ Unable to connect to Database', error);
