@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
+import Employee from '../models/employeeModel';
+import Role from '../models/roleModel';
+import Department from '../models/departmentModel';
 import {
   CLIENT_ID,
   CLIENT_SECRET,
@@ -38,7 +41,17 @@ const authController: {
 
   register: async (req: Request, res: Response) => {
     const token = (req as any).kauth?.grant?.access_token.token;
-    const { email, password, firstName, lastName } = req.body;
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      id,
+      jobTitle,
+      department,
+      weeklyHours,
+      avatar,
+    } = req.body;
     try {
       const createUserResponse = await axios.post(
         KEYCLOAK_ADMIN_URL!,
@@ -62,6 +75,33 @@ const authController: {
       );
 
       if (createUserResponse.status === 201) {
+        const employeeRole = await Role.findOne({
+          where: { name: 'employee' },
+        });
+        if (!employeeRole) {
+          throw new Error('Employee role not found');
+        }
+
+        const departmentID = await Department.findOne({
+          where: { name: department },
+        });
+        if (!departmentID) {
+          throw new Error('Department not found');
+        }
+
+        await Employee.create({
+          id,
+          email,
+          firstName,
+          lastName,
+          dateJoined: new Date(),
+          jobTitle,
+          departmentId: departmentID.id,
+          weeklyHours,
+          roleId: employeeRole.id,
+          avatar,
+        });
+
         const response = await axios.post(
           TOKEN_URL!,
           {
