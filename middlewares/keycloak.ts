@@ -1,21 +1,23 @@
 import Keycloak from 'keycloak-connect';
-import session from 'express-session';
-import { app } from '../app';
-import { SESSION_SECRET } from '../config';
+import {
+  CLIENT_ID,
+  CLIENT_SECRET,
+  KEYCLOAK_URL,
+  KEYCLOAK_REALM,
+} from '../config';
+import { memoryStore } from '../app';
 
-const memoryStore = new session.MemoryStore();
+const keycloakConfig = {
+  realm: KEYCLOAK_REALM!,
+  'bearer-only': true,
+  'auth-server-url': KEYCLOAK_URL!,
+  'ssl-required': 'external',
+  resource: CLIENT_ID!,
+  'public-client': false,
+  credentials: {
+    secret: CLIENT_SECRET!,
+  },
+  'confidential-port': 0,
+};
 
-const keycloak = new Keycloak({ store: memoryStore });
-
-app.use(
-  session({
-    secret: SESSION_SECRET!,
-    resave: false,
-    saveUninitialized: true,
-    store: memoryStore,
-  })
-);
-
-app.use(keycloak.middleware());
-
-export default keycloak;
+export const keycloak = new Keycloak({ store: memoryStore }, keycloakConfig);
