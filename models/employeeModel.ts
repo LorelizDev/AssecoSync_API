@@ -6,6 +6,7 @@ import Role from './roleModel';
 
 class Employee extends Model<EmployeeInterface> implements EmployeeInterface {
   public id!: string;
+  public keycloakId!: string;
   public firstName!: string;
   public lastName!: string;
   public email!: string;
@@ -25,6 +26,11 @@ Employee.init(
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: false,
+      unique: true,
+    },
+    keycloakId: {
+      type: DataTypes.STRING,
+      unique: true,
     },
     firstName: {
       type: DataTypes.STRING,

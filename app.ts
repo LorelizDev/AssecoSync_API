@@ -2,10 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import db from './database/db';
-import { PORT } from './config';
+import { PORT, SESSION_SECRET } from './config/config';
 import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
-import { SESSION_SECRET } from './config';
 import { keycloak } from './middlewares/keycloak';
 
 export const app = express();

@@ -1,5 +1,6 @@
 export interface EmployeeInterface {
   id: string;
+  keycloakId: string;
   firstName: string;
   lastName: string;
   email: string;
