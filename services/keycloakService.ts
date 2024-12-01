@@ -6,6 +6,8 @@ import {
   CLIENT_SECRET,
   TOKEN_URL,
   KEYCLOAK_ADMIN_URL,
+  KEYCLOAK_REALM,
+  KEYCLOAK_URL,
 } from '../config/keycloakConfig';
 
 export const keycloakLogin = async (email: string, password: string) => {
@@ -78,4 +80,9 @@ export const deleteKeycloakUser = async (
   if (response.status !== 204) {
     throw new Error('Error deleting user from Keycloak');
   }
+};
+
+export const changePassword = async () => {
+  const urlChangePassword = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth?response_type=code&client_id=${CLIENT_ID}&kc_action=UPDATE_PASSWORD`;
+  return urlChangePassword;
 };

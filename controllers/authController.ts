@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import axios from 'axios';
 import Employee from '../models/employeeModel';
-import Role from '../models/roleModel';
-import Department from '../models/departmentModel';
 import {
+  changePassword,
   extractTokenInfo,
   keycloakLogin,
   keycloakRegister,
 } from '../services/keycloakService';
+import { getDepartmentId } from '../services/departmentService';
+import { getRoleId } from '../services/roleService';
 
 const authController = {
   login: async (req: Request, res: Response) => {
@@ -37,10 +37,8 @@ const authController = {
     try {
       const keycloakId = await keycloakRegister(email, password, adminToken);
 
-      const departmentId = await Department.findOne({
-        where: { name: department },
-      });
-      const roleId = await Role.findOne({ where: { name: 'employee' } });
+      const departmentId = await getDepartmentId(department);
+      const roleId = await getRoleId('employee');
 
       if (!departmentId || !roleId) {
         throw new Error('Department or role not found');
@@ -65,6 +63,19 @@ const authController = {
         .json({ message: 'Employee created successfully', employee });
     } catch (error) {
       res.status(500).json({ message: 'Error creating employee', error });
+    }
+  },
+
+  updatePassword: async (req: Request, res: Response) => {
+    try {
+      const urlChangePassword = await changePassword();
+      res.redirect(urlChangePassword);
+      return;
+    } catch (error) {
+      console.error('Error generating change password URL:', error);
+      res.status(500).json({
+        error: 'Failed to generate change password URL',
+      });
     }
   },
 };
