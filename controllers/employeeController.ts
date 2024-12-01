@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
-import axios from 'axios';
 import Employee from '../models/employeeModel';
 import Department from '../models/departmentModel';
 import Role from '../models/roleModel';
-import { KEYCLOAK_ADMIN_URL } from '../config/keycloakConfig';
 import {
+  changePassword,
   deleteKeycloakUser,
   extractTokenInfo,
 } from '../services/keycloakService';
+import { getDepartmentId } from '../services/departmentService';
+import { getRoleId } from '../services/roleService';
 
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
@@ -88,6 +89,63 @@ export const getEmployeeById = async (req: Request, res: Response) => {
     res.status(500).json({
       error:
         'An error occurred while retrieving the employee. Please try again later.',
+    });
+  }
+};
+
+export const updateEmployee = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const {
+      email,
+      firstName,
+      lastName,
+      jobTitle,
+      department,
+      weeklyHours,
+      role,
+      avatar,
+    } = req.body;
+
+    const employee = await Employee.findByPk(id);
+    if (!employee) {
+      res.status(404).json({ error: 'Employee not found' });
+      return;
+    }
+
+    const departmentId = await getDepartmentId(department);
+    const roleId = await getRoleId(role);
+
+    const employeeUpdated = await Employee.update(
+      {
+        email,
+        firstName,
+        lastName,
+        jobTitle,
+        departmentId: department ? departmentId?.id : employee.departmentId,
+        weeklyHours,
+        roleId: role ? roleId?.id : employee.roleId,
+        avatar,
+      },
+      {
+        where: { id },
+      }
+    );
+
+    if (!employeeUpdated) {
+      res.status(404).json({ error: 'Employee not found' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Employee updated successfully' });
+  } catch (error) {
+    console.error('Error updating employee:', error);
+    res.status(500).json({
+      error:
+        'An error occurred while updating the employee. Please try again later.',
     });
   }
 };
