@@ -4,7 +4,7 @@ import {
   CLIENT_SECRET,
   KEYCLOAK_URL,
   KEYCLOAK_REALM,
-} from '../config';
+} from '../config/keycloakConfig';
 import { memoryStore } from '../app';
 
 const keycloakConfig = {

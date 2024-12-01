@@ -1,46 +1,27 @@
 import { Request, Response } from 'express';
-import axios from 'axios';
 import Employee from '../models/employeeModel';
-import Role from '../models/roleModel';
-import Department from '../models/departmentModel';
 import {
-  CLIENT_ID,
-  CLIENT_SECRET,
-  TOKEN_URL,
-  KEYCLOAK_ADMIN_URL,
-} from '../config';
+  changePassword,
+  extractTokenInfo,
+  keycloakLogin,
+  keycloakRegister,
+} from '../services/keycloakService';
+import { getDepartmentId } from '../services/departmentService';
+import { getRoleId } from '../services/roleService';
 
-const authController: {
-  login: (req: Request, res: Response) => Promise<void>;
-  register: (req: Request, res: Response) => Promise<void>;
-} = {
+const authController = {
   login: async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
-      const response = await axios.post(
-        TOKEN_URL!,
-        {
-          client_id: CLIENT_ID,
-          grant_type: 'password',
-          username: email,
-          password,
-          client_secret: CLIENT_SECRET,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
-      const { access_token } = response.data;
-      res.status(200).json({ token: access_token });
+      const token = await keycloakLogin(email, password);
+      res.status(200).json({ token });
     } catch (error) {
       res.status(401).json({ message: 'Invalid credentials' });
     }
   },
 
   register: async (req: Request, res: Response) => {
-    const token = (req as any).kauth?.grant?.access_token.token;
+    const adminToken = extractTokenInfo(req).token;
     const {
       email,
       password,
@@ -52,78 +33,49 @@ const authController: {
       weeklyHours,
       avatar,
     } = req.body;
+
     try {
-      const createUserResponse = await axios.post(
-        KEYCLOAK_ADMIN_URL!,
-        {
-          username: email,
-          enabled: true,
-          email,
-          emailVerified: true,
-          firstName,
-          lastName,
-          credentials: [
-            { type: 'password', value: password, temporary: false },
-          ],
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const keycloakId = await keycloakRegister(email, password, adminToken);
 
-      if (createUserResponse.status === 201) {
-        const employeeRole = await Role.findOne({
-          where: { name: 'employee' },
-        });
-        if (!employeeRole) {
-          throw new Error('Employee role not found');
-        }
+      const departmentId = await getDepartmentId(department);
+      const roleId = await getRoleId('employee');
 
-        const departmentID = await Department.findOne({
-          where: { name: department },
-        });
-        if (!departmentID) {
-          throw new Error('Department not found');
-        }
-
-        await Employee.create({
-          id,
-          email,
-          firstName,
-          lastName,
-          dateJoined: new Date(),
-          jobTitle,
-          departmentId: departmentID.id,
-          weeklyHours,
-          roleId: employeeRole.id,
-          avatar,
-        });
-
-        const response = await axios.post(
-          TOKEN_URL!,
-          {
-            client_id: CLIENT_ID,
-            grant_type: 'password',
-            username: email,
-            password,
-            client_secret: CLIENT_SECRET,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-          }
-        );
-        const { access_token } = response.data;
-        res
-          .status(201)
-          .json({ message: 'User created successfully', token: access_token });
+      if (!departmentId || !roleId) {
+        throw new Error('Department or role not found');
       }
+
+      const employee = await Employee.create({
+        id,
+        keycloakId,
+        email,
+        firstName,
+        lastName,
+        dateJoined: new Date(),
+        jobTitle,
+        departmentId: departmentId.id,
+        weeklyHours,
+        roleId: roleId.id,
+        avatar,
+      });
+
+      res
+        .status(201)
+        .json({ message: 'Employee created successfully', employee });
     } catch (error) {
-      res.status(400).json({ message: 'Error creating user' });
+      res.status(500).json({ message: 'Error creating employee', error });
+    }
+  },
+
+  updatePassword: async (req: Request, res: Response) => {
+    try {
+      const urlChangePassword = await changePassword();
+      res.redirect(urlChangePassword);
+      return;
+    } catch (error) {
+      console.error('Error generating change password URL:', error);
+      res.status(500).json({
+        error: 'Failed to generate change password URL',
+      });
     }
   },
 };

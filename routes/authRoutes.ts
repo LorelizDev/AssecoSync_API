@@ -9,5 +9,10 @@ authRoutes.post(
   keycloak.protect('admin'),
   authController.register
 );
+authRoutes.get(
+  '/change-password',
+  keycloak.protect(),
+  authController.updatePassword
+);
 
 export default authRoutes;
