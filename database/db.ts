@@ -1,12 +1,12 @@
 import { Sequelize } from 'sequelize';
+import { NODE_ENV } from '../config/config';
 import {
   DB_HOST,
   DB_DEV_NAME,
   DB_PASSWORD,
   DB_USER,
   DB_TEST_NAME,
-  NODE_ENV,
-} from '../config';
+} from '../config/dbConfig';
 
 const isTest: boolean = NODE_ENV === 'test';
 const dbName: string = isTest ? DB_TEST_NAME! : DB_DEV_NAME!;

@@ -6,6 +6,7 @@ import Role from './roleModel';
 
 class Employee extends Model<EmployeeInterface> implements EmployeeInterface {
   public id!: string;
+  public keycloakId!: string;
   public firstName!: string;
   public lastName!: string;
   public email!: string;
@@ -15,19 +16,8 @@ class Employee extends Model<EmployeeInterface> implements EmployeeInterface {
   public weeklyHours!: number;
   public roleId!: ForeignKey<number>;
   public avatar?: string;
-
-  static associate() {
-    Employee.belongsTo(Department, {
-      foreignKey: 'departmentId',
-      as: 'department',
-      targetKey: 'id',
-    });
-    Employee.belongsTo(Role, {
-      foreignKey: 'roleId',
-      as: 'role',
-      targetKey: 'id',
-    });
-  }
+  public Department?: Department;
+  public Role?: Role;
 }
 
 Employee.init(
@@ -36,6 +26,11 @@ Employee.init(
       type: DataTypes.STRING,
       primaryKey: true,
       allowNull: false,
+      unique: true,
+    },
+    keycloakId: {
+      type: DataTypes.STRING,
+      unique: true,
     },
     firstName: {
       type: DataTypes.STRING,
@@ -80,5 +75,14 @@ Employee.init(
     tableName: 'employees',
   }
 );
+
+Employee.belongsTo(Department, {
+  foreignKey: 'departmentId',
+  as: 'Department',
+});
+Employee.belongsTo(Role, {
+  foreignKey: 'roleId',
+  as: 'Role',
+});
 
 export default Employee;
