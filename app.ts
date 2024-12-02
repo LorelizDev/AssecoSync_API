@@ -6,6 +6,7 @@ import { PORT, SESSION_SECRET } from './config/config';
 import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import { keycloak } from './middlewares/keycloak';
+import statusTimeLogRoutes from './routes/statusTimeLogRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
+app.use('/api/statusTimeLogs', statusTimeLogRoutes);
 
 const startServer = async () => {
   try {
