@@ -5,6 +5,7 @@ import db from './database/db';
 import { PORT, SESSION_SECRET } from './config/config';
 import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
+import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
 
 export const app = express();
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
+app.use('/api/departments', departmentRoutes);
 
 const startServer = async () => {
   try {
