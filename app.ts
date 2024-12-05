@@ -7,7 +7,6 @@ import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
-import LeaveRequest from './models/leaveRequestModel';
 import leaveRequestRoutes from './routes/leaveRequestRoutes';
 import typeRequestRoutes from './routes/typeRequestRoutes';
 import statusRequestRoutes from './routes/statusRequestRoutes';
