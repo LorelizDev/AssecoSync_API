@@ -7,6 +7,10 @@ import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
+import LeaveRequest from './models/leaveRequestModel';
+import leaveRequestRoutes from './routes/leaveRequestRoutes';
+import typeRequestRoutes from './routes/typeRequestRoutes';
+import statusRequestRoutes from './routes/statusRequestRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -34,6 +38,9 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
+app.use('/api/leave-requests', leaveRequestRoutes);
+app.use('/api/type-requests', typeRequestRoutes);
+app.use('/api/status-requests', statusRequestRoutes);
 
 const startServer = async () => {
   try {
