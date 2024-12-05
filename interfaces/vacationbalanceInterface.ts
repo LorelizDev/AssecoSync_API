@@ -4,8 +4,10 @@ export interface VacationBalanceInterface {
   id?: number;
   employeeId: string;
   year: number;
-  balance: number;
+  totalDays: number;
+  usedDays: number;
+  carriedOverDays: number; // Días acumulados del año anterior
 }
 
 export interface VacationBalanceCreationAttributes
-  extends Optional<VacationBalanceInterface, 'id'> {}
+  extends Optional<VacationBalanceInterface, 'id' | 'carriedOverDays'> {}
