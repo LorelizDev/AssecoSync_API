@@ -1,7 +1,12 @@
 import StatusTimeLog from '../models/statusTimeLogModel';
 import TimeLog from '../models/timeLogModel';
 import { locationEnum } from '../interfaces/timeLogInterface';
-import { getDate, getTime } from '../utils/handleDateTime';
+import {
+  getDate,
+  formatTime,
+  calculateWorkTime,
+  calculatePauseTime,
+} from '../utils/handleDateTime';
 
 export const getStatusTimeLogId = async (status: string) => {
   if (!status) {
@@ -16,10 +21,10 @@ export const getStatusTimeLogId = async (status: string) => {
 
 export const handleEndAction = (timeLog: TimeLog) => {
   if (timeLog.startPause && !timeLog.endPause) {
-    timeLog.endPause = getTime();
+    timeLog.endPause = formatTime();
   }
   if (!timeLog.endTime) {
-    timeLog.endTime = getTime();
+    timeLog.endTime = formatTime();
   }
 };
 
@@ -27,14 +32,14 @@ export const handlePauseAction = (timeLog: TimeLog) => {
   if (!timeLog.startTime) {
     throw new Error('You must start your time log before pausing it');
   }
-  timeLog.startPause = getTime();
+  timeLog.startPause = formatTime();
 };
 
 export const handleResumeAction = (timeLog: TimeLog) => {
   if (!timeLog.startPause) {
     throw new Error('You must pause your time log before resuming it');
   }
-  timeLog.endPause = getTime();
+  timeLog.endPause = formatTime();
 };
 
 export const handleAdminUpdates = async (
@@ -50,16 +55,16 @@ export const handleAdminUpdates = async (
 ) => {
   const { date, startTime, endTime, startPause, endPause, location } = updates;
   if (date) timeLog.date = getDate(date);
-  if (startTime) timeLog.startTime = getTime(startTime);
-  if (startPause) timeLog.startPause = getTime(startPause);
+  if (startTime) timeLog.startTime = formatTime(startTime);
+  if (startPause) timeLog.startPause = formatTime(startPause);
   if (endPause) {
-    timeLog.endPause = getTime(endPause);
+    timeLog.endPause = formatTime(endPause);
   }
   if (endTime) {
     if (!timeLog.endPause) {
-      timeLog.endPause = getTime(endTime);
+      timeLog.endPause = formatTime(endTime);
     }
-    timeLog.endTime = getTime(endTime);
+    timeLog.endTime = formatTime(endTime);
     const statusId = await getStatusTimeLogId('closed');
     if (statusId !== null) {
       timeLog.statusId = statusId;
@@ -79,7 +84,7 @@ export const handleStatusTimeLog = async (status: string, timeLog: TimeLog) => {
   if (status) {
     statusId = await getStatusTimeLogId(status);
   }
-  if (!timeLog.endTime && !timeLog.startPause) {
+  if (!timeLog.endTime && (!timeLog.startPause || timeLog.endPause)) {
     statusId = await getStatusTimeLogId('working');
   } else if (!timeLog.endTime && timeLog.startPause && !timeLog.endPause) {
     statusId = await getStatusTimeLogId('break');
@@ -89,5 +94,32 @@ export const handleStatusTimeLog = async (status: string, timeLog: TimeLog) => {
   if (statusId !== null) {
     timeLog.statusId = statusId;
     await timeLog.save();
+  }
+};
+
+export const getTimeDurations = (timeLog: TimeLog) => {
+  const workTime = calculateWorkTime(
+    timeLog.startTime,
+    timeLog.endTime ?? null,
+    timeLog.startPause ?? null,
+    timeLog.endPause ?? null
+  );
+  const pauseTime = calculatePauseTime(
+    timeLog.startPause ?? null,
+    timeLog.endPause ?? null
+  );
+
+  return { workTime, pauseTime };
+};
+
+export const closeTimeLogIfCompleted = async (timeLog: TimeLog) => {
+  const { workTime } = getTimeDurations(timeLog);
+
+  if (workTime >= 8) {
+    handleEndAction(timeLog);
+    handleStatusTimeLog('closed', timeLog);
+    console.log(
+      `TimeLog closed automatically for employee ID: ${timeLog.employeeId}`
+    );
   }
 };

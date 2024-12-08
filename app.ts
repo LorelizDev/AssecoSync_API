@@ -9,6 +9,7 @@ import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
 import statusTimeLogRoutes from './routes/statusTimeLogRoutes';
 import timeLogRoutes from './routes/timeLogRoutes';
+import closeTimeLogsQueue from './config/queue';
 
 export const app = express();
 const port = PORT || 8000;
@@ -28,6 +29,7 @@ app.use(
 );
 
 app.use(keycloak.middleware());
+closeTimeLogsQueue;
 
 app.get('/', (req, res) => {
   res.send('This is the AssecoSync API');
