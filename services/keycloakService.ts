@@ -11,20 +11,24 @@ import {
 } from '../config/keycloakConfig';
 
 export const keycloakLogin = async (email: string, password: string) => {
-  const response = await axios.post(
-    TOKEN_URL!,
-    {
-      client_id: CLIENT_ID,
-      grant_type: 'password',
-      username: email,
-      password,
-      client_secret: CLIENT_SECRET,
-    },
-    {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    }
-  );
-  return response.data.access_token;
+  try {
+    const response = await axios.post(
+      TOKEN_URL!,
+      {
+        client_id: CLIENT_ID,
+        grant_type: 'password',
+        username: email,
+        password,
+        client_secret: CLIENT_SECRET,
+      },
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      }
+    );
+    return response.data.access_token;
+  } catch (error) {
+    throw new Error('Failed to log in with Keycloak');
+  }
 };
 
 export const extractTokenInfo = (req: Request) => {
@@ -36,6 +40,7 @@ export const extractTokenInfo = (req: Request) => {
 export const keycloakRegister = async (
   email: string,
   password: string,
+  firstName: string,
   adminToken: string
 ) => {
   const response = await axios.post(
@@ -44,6 +49,7 @@ export const keycloakRegister = async (
       username: email,
       enabled: true,
       email: email,
+      firstName,
       emailVerified: true,
       credentials: [{ type: 'password', value: password, temporary: false }],
     },
@@ -62,7 +68,6 @@ export const keycloakRegister = async (
   const keycloakId = response.headers['location'].split('/').pop();
   return keycloakId;
 };
-
 export const deleteKeycloakUser = async (
   keycloakId: string,
   adminToken: string
