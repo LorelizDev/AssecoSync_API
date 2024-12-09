@@ -6,7 +6,7 @@ export interface VacationBalanceInterface {
   year: number;
   totalDays: number;
   usedDays: number;
-  carriedOverDays: number; // Días acumulados del año anterior
+  carriedOverDays: number;
 }
 
 export interface VacationBalanceCreationAttributes
