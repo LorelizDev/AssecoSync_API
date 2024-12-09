@@ -10,4 +10,7 @@ export interface VacationBalanceInterface {
 }
 
 export interface VacationBalanceCreationAttributes
-  extends Optional<VacationBalanceInterface, 'id' | 'carriedOverDays'> {}
+  extends Optional<
+    VacationBalanceInterface,
+    'id' | 'carriedOverDays' | 'usedDays'
+  > {}

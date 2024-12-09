@@ -3,7 +3,7 @@ import db from '../database/db';
 import {
   VacationBalanceInterface,
   VacationBalanceCreationAttributes,
-} from '../interfaces/vacationBalanceInterface';
+} from '../interfaces/vacationbalanceInterface';
 import Employee from './employeeModel';
 
 class VacationBalance

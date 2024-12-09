@@ -1,12 +1,16 @@
 import VacationBalance from '../models/vacationBalanceModel';
 import { Op } from 'sequelize';
 
+/**
+ * Initializes a new vacation balance for an employee and year.
+ * If a balance for the given year already exists, it throws an error.
+ * Carries over remaining days from the previous year's balance.
+ */
 export const initializeVacationBalance = async (
   employeeId: string,
   year: number,
   totalDays: number
 ) => {
-  // Verifica si ya existe un balance para este año
   const existingBalance = await VacationBalance.findOne({
     where: { employeeId, year },
   });
@@ -17,29 +21,25 @@ export const initializeVacationBalance = async (
     );
   }
 
-  // Busca el balance del año anterior para calcular días acumulados
   const previousYearBalance = await VacationBalance.findOne({
     where: { employeeId, year: year - 1 },
   });
 
-  const carriedOverDays = previousYearBalance
-    ? Math.max(
-        previousYearBalance.totalDays +
-          previousYearBalance.carriedOverDays -
-          previousYearBalance.usedDays,
-        0
-      )
-    : 0;
+  const carriedOverDays = previousYearBalance?.remainingDays ?? 0;
 
-  // Crea el nuevo balance
   return await VacationBalance.create({
     employeeId,
     year,
     totalDays,
     carriedOverDays,
+    usedDays: 0,
   });
 };
 
+/**
+ * Retrieves the vacation balance for an employee and year.
+ * Throws an error if not found.
+ */
 export const getVacationBalance = async (employeeId: string, year: number) => {
   const balance = await VacationBalance.findOne({
     where: { employeeId, year },
@@ -54,6 +54,29 @@ export const getVacationBalance = async (employeeId: string, year: number) => {
   return balance;
 };
 
+/**
+ * Retrieves vacation balances for an employee within a year range.
+ */
+export const getBalancesWithinYearRange = async (
+  employeeId: string,
+  startYear: number,
+  endYear: number
+) => {
+  return await VacationBalance.findAll({
+    where: {
+      employeeId,
+      year: {
+        [Op.between]: [startYear, endYear], // Filters by a range of years
+      },
+    },
+    order: [['year', 'ASC']], // Sorted by year in ascending order
+  });
+};
+
+/**
+ * Uses vacation days from an employee's balance for a specific year.
+ * Ensures that days used do not exceed available days.
+ */
 export const useVacationDays = async (
   employeeId: string,
   year: number,
@@ -61,8 +84,7 @@ export const useVacationDays = async (
 ) => {
   const balance = await getVacationBalance(employeeId, year);
 
-  const remainingDays =
-    balance.totalDays + balance.carriedOverDays - balance.usedDays;
+  const remainingDays = balance.remainingDays;
   if (days > remainingDays) {
     throw new Error(
       `Insufficient vacation days. Only ${remainingDays} days available.`
@@ -75,6 +97,9 @@ export const useVacationDays = async (
   return balance;
 };
 
+/**
+ * Retrieves all yearly vacation balances for an employee, sorted by year in descending order.
+ */
 export const getYearlyBalances = async (employeeId: string) => {
   return await VacationBalance.findAll({
     where: { employeeId },
