@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
+import vacationBalanceRoutes from './routes/vacationBalanceRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -34,6 +35,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
+app.use('/api/vacation-balances', vacationBalanceRoutes);
 
 const startServer = async () => {
   try {
