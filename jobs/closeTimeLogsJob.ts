@@ -2,7 +2,7 @@ import TimeLog from '../models/timeLogModel';
 import { closeTimeLogIfCompleted } from '../services/timeLogService';
 
 export const closeTimeLogsProcessor = async () => {
-  console.log('Iniciando trabajo de cierre automático de registros...');
+  console.log('Starting automatic log closing job...');
   try {
     const openTimeLogs = await TimeLog.findAll({ where: { endTime: null } });
 
@@ -10,11 +10,9 @@ export const closeTimeLogsProcessor = async () => {
       await closeTimeLogIfCompleted(timeLog);
     }
 
-    console.log(
-      `Trabajo completado: ${openTimeLogs.length} registros procesados.`
-    );
+    console.log(`Job completed: ${openTimeLogs.length} records processed.`);
   } catch (error) {
-    console.error('Error al procesar el trabajo de cierre automático:', error);
+    console.error('Error processing the automatic closing job:', error);
     throw error;
   }
 };
