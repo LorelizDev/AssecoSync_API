@@ -10,6 +10,8 @@ import { keycloak } from './middlewares/keycloak';
 import leaveRequestRoutes from './routes/leaveRequestRoutes';
 import typeRequestRoutes from './routes/typeRequestRoutes';
 import statusRequestRoutes from './routes/statusRequestRoutes';
+import statusTimeLogRoutes from './routes/statusTimeLogRoutes';
+import timeLogRoutes from './routes/timeLogRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -40,6 +42,8 @@ app.use('/api/departments', departmentRoutes);
 app.use('/api/leave-requests', leaveRequestRoutes);
 app.use('/api/type-requests', typeRequestRoutes);
 app.use('/api/status-requests', statusRequestRoutes);
+app.use('/api/log-status', statusTimeLogRoutes);
+app.use('/api/logs', timeLogRoutes);
 
 const startServer = async () => {
   try {

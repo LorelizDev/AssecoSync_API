@@ -16,7 +16,9 @@ const authController = {
       const token = await keycloakLogin(email, password);
       res.status(200).json({ token });
     } catch (error) {
-      res.status(401).json({ message: 'Invalid credentials' });
+      if (error instanceof Error) {
+        res.status(401).json({ error: error.message });
+      }
     }
   },
 
@@ -35,7 +37,12 @@ const authController = {
     } = req.body;
 
     try {
-      const keycloakId = await keycloakRegister(email, password, adminToken);
+      const keycloakId = await keycloakRegister(
+        email,
+        password,
+        firstName,
+        adminToken
+      );
 
       const departmentId = await getDepartmentId(department);
       const roleId = await getRoleId('employee');
