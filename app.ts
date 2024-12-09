@@ -8,6 +8,8 @@ import employeeRoutes from './routes/employeeRoutes';
 import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
 import vacationBalanceRoutes from './routes/vacationBalanceRoutes';
+import statusTimeLogRoutes from './routes/statusTimeLogRoutes';
+import timeLogRoutes from './routes/timeLogRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -36,6 +38,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/vacation-balances', vacationBalanceRoutes);
+app.use('/api/log-status', statusTimeLogRoutes);
+app.use('/api/logs', timeLogRoutes);
 
 const startServer = async () => {
   try {
