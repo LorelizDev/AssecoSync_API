@@ -33,6 +33,7 @@ const authController = {
       jobTitle,
       department,
       weeklyHours,
+      dateJoined,
       avatar,
     } = req.body;
 
@@ -57,7 +58,7 @@ const authController = {
         email,
         firstName,
         lastName,
-        dateJoined: new Date(),
+        dateJoined,
         jobTitle,
         departmentId: departmentId.id,
         weeklyHours,
