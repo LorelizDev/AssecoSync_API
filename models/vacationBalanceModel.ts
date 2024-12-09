@@ -13,7 +13,13 @@ class VacationBalance
   public id!: number;
   public employeeId!: ForeignKey<string>;
   public year!: number;
-  public balance!: number;
+  public totalDays!: number;
+  public usedDays!: number;
+  public carriedOverDays!: number;
+
+  get remainingDays(): number {
+    return this.totalDays + this.carriedOverDays - this.usedDays;
+  }
 }
 
 VacationBalance.init(
@@ -32,9 +38,20 @@ VacationBalance.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    balance: {
-      type: DataTypes.FLOAT,
+    totalDays: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
+    },
+    usedDays: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+    carriedOverDays: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
   },
   {
