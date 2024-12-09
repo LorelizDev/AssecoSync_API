@@ -10,6 +10,7 @@ import { keycloak } from './middlewares/keycloak';
 import statusTimeLogRoutes from './routes/statusTimeLogRoutes';
 import timeLogRoutes from './routes/timeLogRoutes';
 import closeTimeLogsQueue from './config/queue';
+import externalEmployeeRoutes from './routes/externalEmployeeRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -40,6 +41,7 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/log-status', statusTimeLogRoutes);
 app.use('/api/logs', timeLogRoutes);
+app.use('/api/external/employees', externalEmployeeRoutes);
 
 const startServer = async () => {
   try {
