@@ -1,12 +1,11 @@
 import StatusTimeLog from '../models/statusTimeLogModel';
 import TimeLog from '../models/timeLogModel';
 import { locationEnum } from '../interfaces/timeLogInterface';
+import { formatDate, formatTime } from '../utils/dateUtils';
 import {
-  getDate,
-  formatTime,
-  calculateWorkTime,
-  calculatePauseTime,
-} from '../utils/handleDateTime';
+  calculateWorkDuration,
+  calculatePauseDuration,
+} from '../utils/timeCalculation';
 
 export const getStatusTimeLogId = async (status: string) => {
   if (!status) {
@@ -54,7 +53,7 @@ export const handleAdminUpdates = async (
   }
 ) => {
   const { date, startTime, endTime, startPause, endPause, location } = updates;
-  if (date) timeLog.date = getDate(date);
+  if (date) timeLog.date = formatDate(date);
   if (startTime) timeLog.startTime = formatTime(startTime);
   if (startPause) timeLog.startPause = formatTime(startPause);
   if (endPause) {
@@ -98,13 +97,13 @@ export const handleStatusTimeLog = async (status: string, timeLog: TimeLog) => {
 };
 
 export const getTimeDurations = (timeLog: TimeLog) => {
-  const workTime = calculateWorkTime(
+  const workTime = calculateWorkDuration(
     timeLog.startTime,
     timeLog.endTime ?? null,
     timeLog.startPause ?? null,
     timeLog.endPause ?? null
   );
-  const pauseTime = calculatePauseTime(
+  const pauseTime = calculatePauseDuration(
     timeLog.startPause ?? null,
     timeLog.endPause ?? null
   );

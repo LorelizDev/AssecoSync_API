@@ -11,7 +11,7 @@ import {
   handleResumeAction,
   handleStatusTimeLog,
 } from '../services/timeLogService';
-import { formatTime, getDate } from '../utils/handleDateTime';
+import { formatTime, formatDate } from '../utils/dateUtils';
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -108,7 +108,7 @@ export const createTimeLog = async (req: Request, res: Response) => {
     const logToday = await TimeLog.findOne({
       where: {
         employeeId: id,
-        date: date ? getDate(date) : getDate(),
+        date: date ? formatDate(date) : formatDate(),
       },
     });
     if (logToday && !logToday.endTime) {
@@ -120,7 +120,7 @@ export const createTimeLog = async (req: Request, res: Response) => {
 
     const timeLog = await TimeLog.create({
       employeeId: id,
-      date: date ? getDate(date) : getDate(),
+      date: date ? formatDate(date) : formatDate(),
       startTime: startTime ? formatTime(startTime) : formatTime(),
       startPause: startPause && formatTime(startPause),
       endPause: endPause && formatTime(endPause),
