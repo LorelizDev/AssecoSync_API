@@ -34,7 +34,7 @@ TypeRequest.init(
   },
   {
     sequelize: db,
-    tableName: 'type_requests',
+    tableName: 'typeRequests',
   }
 );
 

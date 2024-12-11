@@ -29,7 +29,7 @@ StatusRequest.init(
   },
   {
     sequelize: db,
-    tableName: 'status_requests',
+    tableName: 'statusRequests',
   }
 );
 

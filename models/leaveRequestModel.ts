@@ -51,9 +51,13 @@ LeaveRequest.init(
   },
   {
     sequelize: db,
-    tableName: 'leave_requests',
+    tableName: 'leaveRequests',
   }
 );
+
+Employee.beforeCreate(employee => {
+  console.log('Creating employee:', employee.toJSON());
+});
 
 LeaveRequest.belongsTo(Employee, { foreignKey: 'employeeId', as: 'Employee' });
 LeaveRequest.belongsTo(TypeRequest, { foreignKey: 'typeId', as: 'Type' });

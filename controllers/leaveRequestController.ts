@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import LeaveRequest from '../models/leaveRequestModel';
 
 export const getLeaveRequests = async (req: Request, res: Response) => {
+  console.log('Received request:', req.body);
   try {
     const leaveRequests = await LeaveRequest.findAll();
     res.status(200).json(leaveRequests);
@@ -25,6 +26,7 @@ export const getLeaveRequestById = async (req: Request, res: Response) => {
 };
 
 export const createLeaveRequest = async (req: Request, res: Response) => {
+  console.log('Received request:', req.body);
   const { employeeId, startDate, endDate, typeId, statusId } = req.body;
   try {
     const leaveRequest = await LeaveRequest.create({
@@ -36,7 +38,7 @@ export const createLeaveRequest = async (req: Request, res: Response) => {
     });
     res.status(201).json(leaveRequest);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error });
   }
 };
 
@@ -71,6 +73,7 @@ export const deleteLeaveRequest = async (req: Request, res: Response) => {
       res.status(404).json({ error: 'Leave request not found' });
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
