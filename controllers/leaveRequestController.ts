@@ -1,11 +1,33 @@
 import { Request, Response } from 'express';
 import LeaveRequest from '../models/leaveRequestModel';
+import TypeRequest from '../models/typeRequestModel';
+import StatusRequest from '../models/statusRequestModel';
 
-export const getLeaveRequests = async (req: Request, res: Response) => {
+export const getAllLeaveRequests = async (req: Request, res: Response) => {
   console.log('Received request:', req.body);
   try {
-    const leaveRequests = await LeaveRequest.findAll();
-    res.status(200).json(leaveRequests);
+    const leaveRequests = await LeaveRequest.findAll({
+      include: [
+        {
+          model: TypeRequest,
+          as: 'Type',
+          attributes: ['type', 'detail'],
+        },
+        {
+          model: StatusRequest,
+          as: 'Status',
+          attributes: ['status'],
+        },
+      ],
+    });
+    res.status(200).json(
+      leaveRequests.map(leaveRequest => ({
+        id: leaveRequest.id,
+        leaveTypeName: leaveRequest.Type?.type,
+        leaveTypeDetail: leaveRequest.Type?.detail,
+        leaveStatus: leaveRequest.Status?.status,
+      }))
+    );
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
