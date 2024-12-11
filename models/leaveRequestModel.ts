@@ -17,9 +17,7 @@ class LeaveRequest
   public startDate!: Date;
   public endDate!: Date;
   public typeId!: ForeignKey<number>;
-  public Type?: TypeRequest;
   public statusId!: ForeignKey<number>;
-  public Status?: StatusRequest;
 }
 
 LeaveRequest.init(
