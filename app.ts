@@ -10,6 +10,9 @@ import { keycloak } from './middlewares/keycloak';
 import vacationBalanceRoutes from './routes/vacationBalanceRoutes';
 import statusTimeLogRoutes from './routes/statusTimeLogRoutes';
 import timeLogRoutes from './routes/timeLogRoutes';
+import closeTimeLogsQueue from './config/queue';
+import externalEmployeeRoutes from './routes/externalEmployeeRoutes';
+import statisticsRoutes from './routes/statisticsRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -29,6 +32,7 @@ app.use(
 );
 
 app.use(keycloak.middleware());
+closeTimeLogsQueue;
 
 app.get('/', (req, res) => {
   res.send('This is the AssecoSync API');
@@ -40,6 +44,8 @@ app.use('/api/departments', departmentRoutes);
 app.use('/api/vacation-balances', vacationBalanceRoutes);
 app.use('/api/log-status', statusTimeLogRoutes);
 app.use('/api/logs', timeLogRoutes);
+app.use('/api/external/employees', externalEmployeeRoutes);
+app.use('/api/stats', statisticsRoutes);
 
 const startServer = async () => {
   try {

@@ -4,13 +4,14 @@ import Employee from '../models/employeeModel';
 import StatusTimeLog from '../models/statusTimeLogModel';
 import {
   getStatusTimeLogId,
+  getTimeDurations,
   handleAdminUpdates,
   handleEndAction,
   handlePauseAction,
   handleResumeAction,
   handleStatusTimeLog,
 } from '../services/timeLogService';
-import { getTime, getDate } from '../utils/handleDateTime';
+import { formatTime, formatDate } from '../utils/dateUtils';
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -38,6 +39,8 @@ export const getAllTimeLogs = async (req: Request, res: Response) => {
         endTime: timeLog.endTime,
         location: timeLog.location,
         status: timeLog.statusTimeLog?.status,
+        workTime: getTimeDurations(timeLog).workTime,
+        pauseTime: getTimeDurations(timeLog).pauseTime,
         employee: {
           id: timeLog.employeeId,
           firstName: timeLog.employee?.firstName,
@@ -79,6 +82,8 @@ export const getTimeLogByEmployeeId = async (req: Request, res: Response) => {
         endTime: timeLog.endTime,
         location: timeLog.location,
         status: timeLog.statusTimeLog?.status,
+        workTime: getTimeDurations(timeLog).workTime,
+        pauseTime: getTimeDurations(timeLog).pauseTime,
       }))
     );
   } catch (error) {
@@ -103,7 +108,7 @@ export const createTimeLog = async (req: Request, res: Response) => {
     const logToday = await TimeLog.findOne({
       where: {
         employeeId: id,
-        date: date ? getDate(date) : getDate(),
+        date: date ? formatDate(date) : formatDate(),
       },
     });
     if (logToday && !logToday.endTime) {
@@ -115,11 +120,11 @@ export const createTimeLog = async (req: Request, res: Response) => {
 
     const timeLog = await TimeLog.create({
       employeeId: id,
-      date: date ? getDate(date) : getDate(),
-      startTime: startTime ? getTime(startTime) : getTime(),
-      startPause: startPause && getTime(startPause),
-      endPause: endPause && getTime(endPause),
-      endTime: endTime && getTime(endTime),
+      date: date ? formatDate(date) : formatDate(),
+      startTime: startTime ? formatTime(startTime) : formatTime(),
+      startPause: startPause && formatTime(startPause),
+      endPause: endPause && formatTime(endPause),
+      endTime: endTime && formatTime(endTime),
       location,
       statusId,
     });
