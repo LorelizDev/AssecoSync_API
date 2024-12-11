@@ -10,9 +10,9 @@ export interface timeLogInterface {
   employeeId: string;
   date: Date | string;
   startTime: Date | string;
-  startPause?: Date | string;
-  endPause?: Date | string;
-  endTime?: Date | string;
+  startPause?: Date | string | null;
+  endPause?: Date | string | null;
+  endTime?: Date | string | null;
   location: locationEnum;
   statusId: number;
 }

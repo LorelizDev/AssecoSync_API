@@ -33,13 +33,14 @@ const authController = {
       jobTitle,
       department,
       weeklyHours,
+      dateJoined,
       avatar,
     } = req.body;
 
     try {
       const keycloakId = await keycloakRegister(
         email,
-        password,
+        password ?? '1234',
         firstName,
         adminToken
       );
@@ -57,7 +58,7 @@ const authController = {
         email,
         firstName,
         lastName,
-        dateJoined: new Date(),
+        dateJoined: dateJoined ?? new Date(),
         jobTitle,
         departmentId: departmentId.id,
         weeklyHours,

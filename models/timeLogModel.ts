@@ -16,9 +16,9 @@ class timeLog
   public employeeId!: ForeignKey<string>;
   public date!: Date | string;
   public startTime!: Date | string;
-  public startPause?: Date | string;
-  public endPause?: Date | string;
-  public endTime?: Date | string;
+  public startPause?: Date | string | null;
+  public endPause?: Date | string | null;
+  public endTime?: Date | string | null;
   public location!: locationEnum;
   public statusId!: ForeignKey<number>;
   public Employee?: Employee;
