@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky && husky install"
   },
   "comentarios": {
     "lint": "Este script ejecuta ESLint en todo el proyecto para verificar si hay errores.",
@@ -55,7 +55,7 @@
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.0",
-    "keycloak-connect": "^26.0.6",
+    "keycloak-connect": "^26.0.7",
     "pg": "^8.13.1",
     "sequelize": "^6.37.5"
   },
@@ -63,6 +63,7 @@
     "**/*.{ts,js}": [
       "eslint --fix",
       "prettier --write"
-    ]
+    ],
+    "*.js": "eslint --cache --fix"
   }
 }
