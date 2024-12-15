@@ -56,11 +56,15 @@ export const createLeaveRequest = async (req: Request, res: Response) => {
   }
 };
 
-export const updateLeaveRequest = async (req: Request, res: Response) => {
+export const updateLeaveRequest = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { id } = req.params;
   const { startDate, endDate, typeId, statusId } = req.body;
   const employeeAuth = (req as any).employee;
   const isAdmin = (req as any).isAdmin;
+
   try {
     const leaveRequest = await LeaveRequest.findOne({
       where: {
@@ -68,12 +72,16 @@ export const updateLeaveRequest = async (req: Request, res: Response) => {
         ...(isAdmin ? {} : { employeeId: employeeAuth.id }),
       },
     });
+
     if (leaveRequest) {
-      leaveRequest.startDate = startDate;
-      leaveRequest.endDate = endDate;
-      leaveRequest.typeId = typeId;
-      leaveRequest.statusId = statusId;
+      if (startDate) leaveRequest.startDate = startDate;
+      if (endDate) leaveRequest.endDate = endDate;
+      if (typeId) leaveRequest.typeId = typeId;
+      if (statusId) leaveRequest.statusId = statusId; // Actualizamos el statusId
+
       await leaveRequest.save();
+
+      // Respondemos con la solicitud actualizada
       res.status(200).json(leaveRequest);
     } else {
       res
@@ -81,6 +89,7 @@ export const updateLeaveRequest = async (req: Request, res: Response) => {
         .json({ error: 'Leave request not found or user not authorized' });
     }
   } catch (error) {
+    console.error('Error updating leave request:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
