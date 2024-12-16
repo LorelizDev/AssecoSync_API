@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import LeaveRequest from '../models/leaveRequestModel';
+import VacationBalance from '../models/vacationBalanceModel';
+import { differenceInCalendarDays } from 'date-fns';
+import { Op } from 'sequelize';
 
 export const getAllLeaveRequests = async (req: Request, res: Response) => {
   try {
@@ -38,21 +41,107 @@ export const getLeaveRequestById = async (req: Request, res: Response) => {
   }
 };
 
+function validateDates(startDate: string, endDate: string): string | null {
+  if (
+    isNaN(new Date(startDate).getTime()) ||
+    isNaN(new Date(endDate).getTime())
+  ) {
+    return 'Invalid start date or end date.';
+  }
+
+  if (new Date(startDate) > new Date(endDate)) {
+    return 'The start date cannot be after the end date.';
+  }
+
+  return null;
+}
+
+function validateStatusId(statusId: number): string | null {
+  const validStatusIds = [1, 2, 3]; // Ajusta según tu lógica
+  if (statusId && !validStatusIds.includes(statusId)) {
+    return 'Invalid status ID provided.';
+  }
+  return null;
+}
+
 export const createLeaveRequest = async (req: Request, res: Response) => {
   const { employeeId, startDate, endDate, typeId, statusId } = req.body;
+
   try {
+    const dateError = validateDates(startDate, endDate);
+    if (dateError) return res.status(400).json({ error: dateError });
+
+    const vacationBalance = await VacationBalance.findOne({
+      where: { employeeId },
+    });
+    if (!vacationBalance) {
+      return res
+        .status(400)
+        .json({ error: 'Vacation balance not found for the employee.' });
+    }
+
+    const daysRequested =
+      differenceInCalendarDays(new Date(endDate), new Date(startDate)) + 1;
+    if (daysRequested > vacationBalance.remainingDays) {
+      return res.status(400).json({ error: 'Insufficient vacation balance.' });
+    }
+
+    const overlappingRequest = await LeaveRequest.findOne({
+      where: {
+        employeeId,
+        [Op.or]: [
+          { startDate: { [Op.between]: [startDate, endDate] } },
+          { endDate: { [Op.between]: [startDate, endDate] } },
+          {
+            [Op.and]: [
+              { startDate: { [Op.lte]: startDate } },
+              { endDate: { [Op.gte]: endDate } },
+            ],
+          },
+        ],
+      },
+    });
+    if (overlappingRequest) {
+      return res.status(400).json({
+        error: 'The leave request overlaps with an existing leave request.',
+      });
+    }
+
+    const today = new Date();
+    const maxPastDays = 30;
+    if (
+      new Date(endDate) < today &&
+      differenceInCalendarDays(today, new Date(endDate)) > maxPastDays
+    ) {
+      return res.status(400).json({
+        error: `Past leave requests cannot be registered for dates more than ${maxPastDays} days ago.`,
+      });
+    }
+
     const employeeAuth = (req as any).employee;
     const isAdmin = (req as any).isAdmin;
+
+    const statusError = validateStatusId(statusId);
+    if (statusError) return res.status(400).json({ error: statusError });
+
     const leaveRequest = await LeaveRequest.create({
       employeeId: isAdmin ? employeeId : employeeAuth.id,
       startDate,
       endDate,
       typeId,
-      statusId,
+      statusId: statusId || 1,
+      vacationBalanceId: vacationBalance.id,
     });
+
     res.status(201).json(leaveRequest);
   } catch (error) {
-    res.status(500).json({ error: error });
+    if (error instanceof Error) {
+      console.error('Error creating leave request:', error.message);
+      res.status(500).json({ error: 'Internal server error' });
+    } else {
+      console.error('Unexpected error:', error);
+      res.status(500).json({ error: 'An unexpected error occurred.' });
+    }
   }
 };
 

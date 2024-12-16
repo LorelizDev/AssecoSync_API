@@ -7,7 +7,10 @@ export interface LeaveRequestInterface {
   endDate: Date;
   typeId: number;
   statusId: number;
+  vacationBalanceId?: number;
 }
 
 export interface LeaveRequestCreationAttributes
-  extends Optional<LeaveRequestInterface, 'id'> {}
+  extends Optional<LeaveRequestInterface, 'id'> {
+  vacationBalanceId?: number;
+}
