@@ -4,7 +4,6 @@ import Employee from '../models/employeeModel';
 import Department from '../models/departmentModel';
 import Role from '../models/roleModel';
 import {
-  changePassword,
   deleteKeycloakUser,
   extractTokenInfo,
 } from '../services/keycloakService';

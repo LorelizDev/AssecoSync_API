@@ -7,6 +7,14 @@ import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
+import leaveRequestRoutes from './routes/leaveRequestRoutes';
+import typeRequestRoutes from './routes/typeRequestRoutes';
+import statusRequestRoutes from './routes/statusRequestRoutes';
+import statusTimeLogRoutes from './routes/statusTimeLogRoutes';
+import timeLogRoutes from './routes/timeLogRoutes';
+import closeTimeLogsQueue from './config/queue';
+import externalEmployeeRoutes from './routes/externalEmployeeRoutes';
+import statisticsRoutes from './routes/statisticsRoutes';
 
 export const app = express();
 const port = PORT || 8000;
@@ -26,6 +34,7 @@ app.use(
 );
 
 app.use(keycloak.middleware());
+closeTimeLogsQueue;
 
 app.get('/', (req, res) => {
   res.send('This is the AssecoSync API');
@@ -34,6 +43,13 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
+app.use('/api/leave-requests', leaveRequestRoutes);
+app.use('/api/type-requests', typeRequestRoutes);
+app.use('/api/status-requests', statusRequestRoutes);
+app.use('/api/log-status', statusTimeLogRoutes);
+app.use('/api/logs', timeLogRoutes);
+app.use('/api/external/employees', externalEmployeeRoutes);
+app.use('/api/stats', statisticsRoutes);
 
 const startServer = async () => {
   try {
