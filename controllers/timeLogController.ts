@@ -15,7 +15,12 @@ import { formatTime, formatDate } from '../utils/dateUtils';
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
+    const isAdmin = (req as any).isAdmin;
+    const employeeAuth = (req as any).employee;
     const timeLogs = await TimeLog.findAll({
+      where: {
+        ...(isAdmin ? {} : { employeeId: employeeAuth.id }),
+      },
       include: [
         {
           model: Employee,
@@ -58,13 +63,17 @@ export const getAllTimeLogs = async (req: Request, res: Response) => {
   }
 };
 
-export const getTimeLogByEmployeeId = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
+export const getTimeLogById = async (req: Request, res: Response) => {
   try {
-    const timeLogs = await TimeLog.findAll({
-      where: { employeeId: id },
+    const { id } = req.params;
+    const timeLog = await TimeLog.findOne({
+      where: { id },
       include: [
+        {
+          model: Employee,
+          as: 'employee',
+          attributes: ['id', 'firstName', 'lastName', 'email'],
+        },
         {
           model: StatusTimeLog,
           as: 'statusTimeLog',
@@ -72,20 +81,37 @@ export const getTimeLogByEmployeeId = async (req: Request, res: Response) => {
         },
       ],
     });
-    res.status(200).json(
-      timeLogs.map(timeLog => ({
-        id: timeLog.id,
-        date: timeLog.date,
-        startTime: timeLog.startTime,
-        startPause: timeLog.startPause,
-        endPause: timeLog.endPause,
-        endTime: timeLog.endTime,
-        location: timeLog.location,
-        status: timeLog.statusTimeLog?.status,
-        workTime: getTimeDurations(timeLog).workTime,
-        pauseTime: getTimeDurations(timeLog).pauseTime,
-      }))
-    );
+    if (!timeLog) {
+      res.status(404).json({ error: 'Time log not found' });
+      return;
+    }
+
+    if (
+      timeLog.employeeId !== (req as any).employee?.id &&
+      !(req as any).isAdmin
+    ) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    res.status(200).json({
+      id: timeLog.id,
+      date: timeLog.date,
+      startTime: timeLog.startTime,
+      startPause: timeLog.startPause,
+      endPause: timeLog.endPause,
+      endTime: timeLog.endTime,
+      location: timeLog.location,
+      status: timeLog.statusTimeLog?.status,
+      workTime: getTimeDurations(timeLog).workTime,
+      pauseTime: getTimeDurations(timeLog).pauseTime,
+      employee: {
+        id: timeLog.employeeId,
+        firstName: timeLog.employee?.firstName,
+        lastName: timeLog.employee?.lastName,
+        email: timeLog.employee?.email,
+      },
+    });
   } catch (error) {
     if (error instanceof Error) {
       res
@@ -96,18 +122,27 @@ export const getTimeLogByEmployeeId = async (req: Request, res: Response) => {
 };
 
 export const createTimeLog = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { date, startTime, endTime, startPause, endPause, location, status } =
-    req.body;
+  const {
+    date,
+    startTime,
+    endTime,
+    startPause,
+    endPause,
+    location,
+    status,
+    employeeId,
+  } = req.body;
   const statusId = await getStatusTimeLogId(status || 'working');
   if (!statusId) {
     throw new Error('Status time log not found');
   }
 
   try {
+    const employeeAuth = (req as any).employee;
+    const isAdmin = (req as any).isAdmin;
     const logToday = await TimeLog.findOne({
       where: {
-        employeeId: id,
+        employeeId: isAdmin ? employeeId : employeeAuth.id,
         date: date ? formatDate(date) : formatDate(),
       },
     });
@@ -119,7 +154,7 @@ export const createTimeLog = async (req: Request, res: Response) => {
     }
 
     const timeLog = await TimeLog.create({
-      employeeId: id,
+      employeeId: isAdmin ? employeeId : employeeAuth.id,
       date: date ? formatDate(date) : formatDate(),
       startTime: startTime ? formatTime(startTime) : formatTime(),
       startPause: startPause && formatTime(startPause),
@@ -140,7 +175,7 @@ export const createTimeLog = async (req: Request, res: Response) => {
 };
 
 export const updateTimeLog = async (req: Request, res: Response) => {
-  const { id, timeLogId } = req.params;
+  const { id } = req.params;
   const {
     action,
     date,
@@ -153,11 +188,18 @@ export const updateTimeLog = async (req: Request, res: Response) => {
   } = req.body;
 
   try {
+    const isAdmin = (req as any).isAdmin;
+    const employeeAuth = (req as any).employee;
     const timeLog = await TimeLog.findOne({
-      where: { id: timeLogId, employeeId: id },
+      where: {
+        id,
+        ...(isAdmin ? {} : { employeeId: employeeAuth.id }),
+      },
     });
     if (!timeLog) {
-      res.status(404).json({ error: 'Time log not found' });
+      res
+        .status(404)
+        .json({ error: 'Time log not found or user not authorized' });
       return;
     }
 

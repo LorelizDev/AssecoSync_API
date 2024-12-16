@@ -5,26 +5,16 @@ import {
   deleteTimeLog,
   getAllTimeLogs,
   updateTimeLog,
-  getTimeLogByEmployeeId,
+  getTimeLogById,
 } from '../controllers/timeLogController';
 import { userAuthorized } from '../middlewares/authMiddleware';
 
 const timeLogRoutes = Router();
 
-timeLogRoutes.get('/', keycloak.protect('admin'), getAllTimeLogs);
-timeLogRoutes.get(
-  '/:id',
-  keycloak.protect(),
-  userAuthorized,
-  getTimeLogByEmployeeId
-); // id: employee id
-timeLogRoutes.post('/:id', keycloak.protect(), userAuthorized, createTimeLog);
-timeLogRoutes.put(
-  '/:id/:timeLogId',
-  keycloak.protect(),
-  userAuthorized,
-  updateTimeLog
-);
-timeLogRoutes.delete('/:timeLogId', keycloak.protect('admin'), deleteTimeLog);
+timeLogRoutes.post('/', keycloak.protect(), userAuthorized, createTimeLog);
+timeLogRoutes.get('/', keycloak.protect(), userAuthorized, getAllTimeLogs);
+timeLogRoutes.get('/:id', keycloak.protect(), userAuthorized, getTimeLogById);
+timeLogRoutes.put('/:id', keycloak.protect(), userAuthorized, updateTimeLog);
+timeLogRoutes.delete('/:id', keycloak.protect('admin'), deleteTimeLog);
 
 export default timeLogRoutes;
