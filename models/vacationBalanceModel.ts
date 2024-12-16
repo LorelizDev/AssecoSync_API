@@ -3,7 +3,7 @@ import db from '../database/db';
 import {
   VacationBalanceInterface,
   VacationBalanceCreationAttributes,
-} from '../interfaces/vacationbalanceInterface';
+} from '../interfaces/vacationBalanceInterface';
 import Employee from './employeeModel';
 
 class VacationBalance
@@ -17,6 +17,7 @@ class VacationBalance
   public usedDays!: number;
   public carriedOverDays!: number;
 
+  // Atributo calculado
   get remainingDays(): number {
     return this.totalDays + this.carriedOverDays - this.usedDays;
   }
@@ -57,6 +58,7 @@ VacationBalance.init(
   {
     sequelize: db,
     tableName: 'vacation_balances',
+    timestamps: false, // Opcional: si no tienes columnas de auditoría como createdAt o updatedAt
   }
 );
 
