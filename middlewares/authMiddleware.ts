@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { extractTokenInfo } from '../services/keycloakService';
 import Employee from '../models/employeeModel';
 import { CLIENT_ID } from '../config/keycloakConfig';
@@ -34,3 +34,12 @@ export const userAuthorized = async (
     res.status(401).json({ message: 'Unauthorized' });
   }
 };
+
+const asyncHandler =
+  (
+    fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+  ): RequestHandler =>
+  (req, res, next) =>
+    Promise.resolve(fn(req, res, next)).catch(next);
+
+export default asyncHandler;

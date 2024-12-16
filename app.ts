@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import departmentRoutes from './routes/departmentRoutes';
 import { keycloak } from './middlewares/keycloak';
+import vacationBalanceRoutes from './routes/vacationBalanceRoutes';
 import leaveRequestRoutes from './routes/leaveRequestRoutes';
 import typeRequestRoutes from './routes/typeRequestRoutes';
 import statusRequestRoutes from './routes/statusRequestRoutes';
@@ -43,6 +44,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
+app.use('/api/vacation-balances', vacationBalanceRoutes);
 app.use('/api/leave-requests', leaveRequestRoutes);
 app.use('/api/type-requests', typeRequestRoutes);
 app.use('/api/status-requests', statusRequestRoutes);

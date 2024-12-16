@@ -1,56 +1,125 @@
 import { Request, Response } from 'express';
-import {
-  createVacationBalance,
-  getAllVacationBalances,
-  getVacationBalanceById,
-  updateVacationBalance,
-  deleteVacationBalance,
-} from '../services/vacationBalanceService';
+import VacationBalance from '../models/vacationBalanceModel';
 
-export const getVacationBalances = async (req: Request, res: Response) => {
+// Obtener todos los balances de vacaciones
+export const getAllVacationBalances = async (_req: Request, res: Response) => {
   try {
-    const balances = await getAllVacationBalances();
-    res.json(balances);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    const vacationBalances = await VacationBalance.findAll();
+    return res.status(200).json(vacationBalances);
+  } catch (error) {
+    console.error('Error fetching vacation balances:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-export const getVacationBalance = async (req: Request, res: Response) => {
+// Obtener un balance de vacaciones por ID
+export const getVacationBalanceById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const balance = await getVacationBalanceById(Number(id));
-    res.json(balance);
-  } catch (error: any) {
-    res.status(404).json({ error: error.message });
+    const vacationBalance = await VacationBalance.findByPk(id);
+
+    if (!vacationBalance) {
+      return res.status(404).json({ message: 'Vacation balance not found' });
+    }
+
+    return res.status(200).json(vacationBalance);
+  } catch (error) {
+    console.error('Error fetching vacation balance by ID:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-export const createBalance = async (req: Request, res: Response) => {
+// Crear un nuevo balance de vacaciones
+export const createVacationBalance = async (req: Request, res: Response) => {
   try {
-    const balance = await createVacationBalance(req.body);
-    res.status(201).json(balance);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    const { employeeId, year, totalDays, usedDays, carriedOverDays } = req.body;
+
+    const vacationBalance = await VacationBalance.create({
+      employeeId,
+      year,
+      totalDays,
+      usedDays,
+      carriedOverDays,
+    });
+
+    return res.status(201).json(vacationBalance);
+  } catch (error) {
+    console.error('Error creating vacation balance:', error);
+    return res.status(400).json({ message: 'Invalid data or request' });
   }
 };
 
-export const updateBalance = async (req: Request, res: Response) => {
+// Actualizar un balance de vacaciones
+export const updateVacationBalance = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updatedBalance = await updateVacationBalance(Number(id), req.body);
-    res.json(updatedBalance);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    const { totalDays, usedDays, carriedOverDays } = req.body;
+
+    const vacationBalance = await VacationBalance.findByPk(id);
+
+    if (!vacationBalance) {
+      return res.status(404).json({ message: 'Vacation balance not found' });
+    }
+
+    await vacationBalance.update({
+      totalDays,
+      usedDays,
+      carriedOverDays,
+    });
+
+    return res.status(200).json(vacationBalance);
+  } catch (error) {
+    console.error('Error updating vacation balance:', error);
+    return res.status(400).json({ message: 'Invalid data or request' });
   }
 };
 
-export const deleteBalance = async (req: Request, res: Response) => {
+// Eliminar un balance de vacaciones
+export const deleteVacationBalance = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await deleteVacationBalance(Number(id));
-    res.status(204).send();
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+
+    const vacationBalance = await VacationBalance.findByPk(id);
+    if (!vacationBalance) {
+      return res.status(404).json({ message: 'Vacation balance not found' });
+    }
+
+    await vacationBalance.destroy();
+    return res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting vacation balance:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Usar días de vacaciones
+export const useVacationDays = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { daysUsed } = req.body;
+
+    const vacationBalance = await VacationBalance.findByPk(id);
+    if (!vacationBalance) {
+      return res.status(404).json({ message: 'Vacation balance not found' });
+    }
+
+    const remainingDays =
+      vacationBalance.totalDays +
+      vacationBalance.carriedOverDays -
+      vacationBalance.usedDays;
+
+    if (daysUsed > remainingDays) {
+      return res
+        .status(400)
+        .json({ message: 'The requested days exceed the available balance' });
+    }
+
+    vacationBalance.usedDays += daysUsed;
+    await vacationBalance.save();
+
+    return res.status(200).json(vacationBalance);
+  } catch (error) {
+    console.error('Error using vacation days:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
