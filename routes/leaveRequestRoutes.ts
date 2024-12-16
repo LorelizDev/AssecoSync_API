@@ -35,6 +35,12 @@ leaveRequestRoutes.put(
   userAuthorized,
   updateLeaveRequest
 );
+leaveRequestRoutes.patch(
+  '/:id',
+  keycloak.protect(),
+  userAuthorized,
+  updateLeaveRequest
+);
 leaveRequestRoutes.delete(
   '/:id',
   keycloak.protect(),
