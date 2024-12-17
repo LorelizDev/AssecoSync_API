@@ -98,6 +98,13 @@ export const useVacationDays = async (
 };
 
 /**
+ * Retrieves all vacation balances for all employees.
+ */
+export const getAllVacationBalances = async () => {
+  return await VacationBalance.findAll(); // Retrieves all vacation balances
+};
+
+/**
  * Retrieves all yearly vacation balances for an employee, sorted by year in descending order.
  */
 export const getYearlyBalances = async (employeeId: string) => {

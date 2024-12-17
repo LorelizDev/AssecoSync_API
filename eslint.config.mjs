@@ -29,6 +29,30 @@ export default [
     },
   },
 
+  module.exports = {
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+      project: './tsconfig.json',
+      sourceType: 'module',
+      ecmaVersion: 2020,
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+    plugins: ['@typescript-eslint', 'prettier'],
+    extends: [
+      'eslint:recommended',
+      'plugin:@typescript-eslint/recommended',
+      'plugin:prettier/recommended',
+    ],
+    rules: {
+      'prettier/prettier': ['error', {
+        endOfLine: 'auto', // Adjust as needed
+      }],
+      // Add any additional rules or overrides here
+    },
+  },
+
   // Reglas recomendadas de ESLint
   eslintJs.configs.recommended,
   tseslint.configs.recommended,
