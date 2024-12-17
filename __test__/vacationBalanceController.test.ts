@@ -117,15 +117,6 @@ describe('Vacation Balance Controller', () => {
     });
   });
 
-  // Comentamos los tests problemáticos
-  // describe('updateVacationBalance', () => {
-  //   tests problemáticos
-  // });
-
-  // describe('deleteVacationBalance', () => {
-  //   tests problemáticos
-  // });
-
   describe('useVacationDays', () => {
     it('should use vacation days successfully', async () => {
       const mockBalance = {
