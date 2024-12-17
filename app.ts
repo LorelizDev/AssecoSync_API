@@ -15,6 +15,7 @@ import timeLogRoutes from './routes/timeLogRoutes';
 import closeTimeLogsQueue from './config/queue';
 import externalEmployeeRoutes from './routes/externalEmployeeRoutes';
 import statisticsRoutes from './routes/statisticsRoutes';
+import registerBulk from './database/bulk-creation-database';
 
 export const app = express();
 const port = PORT || 8000;
@@ -50,7 +51,7 @@ app.use('/api/log-status', statusTimeLogRoutes);
 app.use('/api/logs', timeLogRoutes);
 app.use('/api/external/employees', externalEmployeeRoutes);
 app.use('/api/stats', statisticsRoutes);
-
+app.use('/api', registerBulk);
 const startServer = async () => {
   try {
     await db.authenticate();
