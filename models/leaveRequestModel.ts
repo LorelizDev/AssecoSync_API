@@ -7,6 +7,7 @@ import {
 import Employee from './employeeModel';
 import TypeRequest from './typeRequestModel';
 import StatusRequest from './statusRequestModel';
+import VacationBalance from './vacationBalanceModel';
 
 class LeaveRequest
   extends Model<LeaveRequestInterface, LeaveRequestCreationAttributes>
@@ -18,6 +19,7 @@ class LeaveRequest
   public endDate!: Date;
   public typeId!: ForeignKey<number>;
   public statusId!: ForeignKey<number>;
+  public vacationBalanceId?: ForeignKey<number>;
 }
 
 LeaveRequest.init(
@@ -48,6 +50,10 @@ LeaveRequest.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    vacationBalanceId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     sequelize: db,
@@ -62,5 +68,8 @@ Employee.beforeCreate(employee => {
 LeaveRequest.belongsTo(Employee, { foreignKey: 'employeeId', as: 'Employee' });
 LeaveRequest.belongsTo(TypeRequest, { foreignKey: 'typeId', as: 'Type' });
 LeaveRequest.belongsTo(StatusRequest, { foreignKey: 'statusId', as: 'Status' });
-
+LeaveRequest.belongsTo(VacationBalance, {
+  foreignKey: 'vacationBalanceId',
+  as: 'VacationBalance',
+});
 export default LeaveRequest;

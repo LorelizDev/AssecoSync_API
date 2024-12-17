@@ -37,3 +37,11 @@ if (!SESSION_SECRET) {
 }
 
 export { NODE_ENV, PORT, SESSION_SECRET };
+
+export const DB_CONFIG = {
+  host: '3306',
+  user: 'root',
+  password: 'root',
+  database: 'assecosync',
+  dialect: 'mysql',
+};
