@@ -10,4 +10,4 @@ export const formatDate = (date?: Date | string) =>
   dayjs(date || dayjs()).format('YYYY-MM-DD');
 
 export const formatTime = (time?: Date | string) =>
-  dayjs(time || dayjs()).format('HH:mm');
+  dayjs(time || dayjs()).format('HH:mm:ss');
