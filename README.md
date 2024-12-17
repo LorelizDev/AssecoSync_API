@@ -1,5 +1,16 @@
 # AssecoSync API 🚀
 
+## 📁 Project Structure 
+
+We have separated the project into two repositories:
+
+- **[AssecoSync Client](https://github.com/LorelizDev/AssecoSync_client)**: Focuses exclusively on the user interface (UI), presentation logic, and user experience.
+
+- **[AssecoSync API](https://github.com/LorelizDev/AssecoSync_API)**: Handles business logic, data storage, authentication, authorizations, and database communication.
+
+---
+
+
 ## Table of Contents
 
 1. [Overview](#📝-Overview)
@@ -51,16 +62,17 @@ AssecoSync integrates Bull, a robust queue system, to manage background jobs eff
 
 ### ➕ Additional Technologies Used:
 
-- **Node.js:** JavaScript runtime environment for building scalable server-side applications.
-- **Express.js:** Web framework for Node.js, used to build APIs and handle HTTP requests.
-- **Sequelize:** ORM for Node.js that helps interact with relational databases like PostgreSQL.
-- **PostgreSQL:** Open-source relational database system used to store data.
-- **Typescript:** A statically typed superset of JavaScript that helps catch errors early and improve code quality.
-- **Docker:** Platform for containerizing applications, used here for Keycloak and Redis services.
-- **Day.js:** Lightweight library for handling and manipulating dates and times in JavaScript.
-- **Prettier:** Code formatter that ensures consistent code style across the project.
-- **ESLint:** Static code analysis tool for identifying and fixing problems in JavaScript/TypeScript code.
-- **Husky:** Git hooks tool for enforcing rules like running tests or linting before commits.
+- ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white): JavaScript runtime environment for building scalable server-side applications.
+- ![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white): Web framework for Node.js, used to build APIs and handle HTTP requests.
+- ![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white): ORM for Node.js that helps interact with relational databases like PostgreSQL.
+- ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white): Open-source relational database system used to store data.
+- ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white): A statically typed superset of JavaScript that helps catch errors early and improve code quality.
+- ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white): Platform for containerizing applications, used here for Keycloak and Redis services.
+- ![Day.js](https://img.shields.io/badge/Day.js-FF6F00?style=for-the-badge&logo=javascript&logoColor=white): Lightweight library for handling and manipulating dates and times in JavaScript.
+- ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=white): Code formatter that ensures consistent code style across the project.
+- ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white): Static code analysis tool for identifying and fixing problems in JavaScript/TypeScript code.
+- ![Husky](https://img.shields.io/badge/Husky-000000?style=for-the-badge&logo=git&logoColor=white): Git hooks tool for enforcing rules like running tests or linting before commits.
+
 
 ## 📃 API Documentation
 
